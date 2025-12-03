@@ -31,10 +31,6 @@ export const isAuthenticated = async (req, res, next) => {
     }
 };
 
-export const getSuggestedUsers = async (req, res) => {
-
-};
-
 
 
     
