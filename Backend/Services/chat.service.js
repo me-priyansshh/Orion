@@ -7,7 +7,6 @@ dotenv.config();
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY });
 
-// 🧩 Global message context (kept only while app runs)
 let messages = [
   {
     role: "system",
@@ -21,7 +20,7 @@ let messages = [
 ];
 
 export default async function main({prompt, model}) {
-  // add new user message to history
+  
   messages.push({ role: "user", content: prompt });
 
   const Max_Retries = 6;
@@ -64,7 +63,7 @@ export default async function main({prompt, model}) {
     if (!toolCalls) {
       const reply = message.content;
       messages.push({ role: "assistant", content: reply });
-      return reply; // context persists globally
+      return reply;
     }
 
     // handle tool calls
