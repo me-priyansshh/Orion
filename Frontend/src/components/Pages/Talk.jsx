@@ -40,7 +40,7 @@ const Talk = () => {
         prompt: text,
       });
 
-       const audio = new Audio(`http://localhost:8000/${res.data.audioUrl}`);
+       const audio = new Audio(`${import.meta.env.VITE_BACKEND_URL}/${res.data.audioUrl}`);
        audio.play();
 
     } catch (err) {
