@@ -26,7 +26,7 @@ server.use('/uploads', express.static('uploads'));
 
 //========= CORS CONFIGURATION ========//
 server.use(cors({
-    origin: 'http://localhost:5173', //Frontend URL
+    origin: process.env.FRONTEND_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
 }));

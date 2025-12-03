@@ -1,0 +1,149 @@
+# Orion Insta — Advanced GPT with RAG, Image & Voice AI Assistant
+
+Orion Insta is an advanced multimodal AI assistant built with:
+- Retrieval-Augmented Generation (RAG)
+- Image understanding & generation
+- Voice input + AI speech output
+- Intelligent chat with memory
+- Fast, modern UI
+
+It acts as a personal AI assistant capable of analyzing images, responding through voice, using custom knowledge sources, and generating high-quality answers.
+
+---
+
+## Features
+
+### 1. Retrieval-Augmented Generation (RAG)
+- Upload documents (PDF, text, etc.)
+- AI answers using your data
+- Automatic text chunking + embeddings
+- Vector search for accurate context
+- Multi-document support
+
+### 2. Voice Input & Voice Output
+- Speak into the mic → converts your speech to text
+- AI replies using realistic speech
+- Uses Whisper / STT + natural TTS
+
+### 3. Image Understanding + Image Generation
+- Upload images → AI explains & analyzes them
+- Extracts text, objects, and context
+- Generate new AI images from prompts
+- Multimodal GPT reasoning
+
+### 4. Smart AI Chat with Memory
+- Saves context over long conversations
+- Learns from previous interactions
+- Clean and fast real-time UI
+- Streaming responses
+
+### 5. Advanced GPT Integration
+- GPT-4 / GPT-4o / GPT-5 style reasoning
+- Function calling support
+- Structured outputs
+- Multi-modal support
+
+---
+
+## Tech Stack
+
+### Frontend
+- React / Vite
+- Tailwind CSS
+- Zustand
+- Axios
+- Web Speech API
+
+### Backend
+- Node.js / Express
+- LangChain / Custom RAG pipeline
+- Vector DB (FAISS / Pinecone / Chroma)
+- OpenAI API (GPT, Images, Audio)
+- Whisper / TTS
+- JWT Auth
+
+---
+
+## Folder Structure
+
+```
+orion-insta/
+│── frontend/
+│   ├── src/
+│   ├── components/
+│   ├── pages/
+│   └── utils/
+│── backend/
+│   ├── routes/
+│   ├── controllers/
+│   ├── rag/
+│   ├── vector-store/
+│   └── services/
+│── .env.example
+└── README.md
+```
+
+---
+
+## Setup Instructions
+
+### Clone the Repository
+```bash
+git clone https://github.com/your-username/orion-insta.git
+cd orion-insta
+```
+
+### Start Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Start Backend
+```bash
+cd backend
+npm install
+npm start
+```
+
+---
+
+## Environment Variables (.env.example)
+
+```
+OPENAI_API_KEY=your_key_here
+VECTOR_DB_URL=
+JWT_SECRET=
+CLIENT_URL=http://localhost:5173
+```
+
+---
+
+## Deployment
+Supports:
+- Vercel (Frontend)
+- Render / Railway (Backend)
+- Docker deployment
+- Netlify / Cloudflare Pages
+
+---
+
+## Future Enhancements
+- Multiple user accounts
+- Realtime embeddings synchronization
+- Custom voice cloning
+- Video understanding
+- Autonomous agent workflows
+
+---
+
+## Author
+**Priyansh Kumar**  
+Full Stack & GenAI Engineer  
+Creator of the Orion AI Ecosystem
+
+---
+
+## Support
+If you like this project, please ⭐ star the repo on GitHub.
