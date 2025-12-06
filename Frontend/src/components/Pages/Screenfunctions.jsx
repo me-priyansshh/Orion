@@ -70,30 +70,24 @@ const PostCard = ({
   };
 
   const handleLikeOrDislike = async (_id) => {
-    try {
-      const action = liked ? "unlike" : "like";
-      const res = await axios.put(`/api/post/${action}/${_id}`);
+  try {
+    const action = liked ? "like" : "unlike";
+    const res = await axios.put(`/api/post/${action}/${_id}`);
+    const updatedPost = res.data.post;  
+    const updatedPosts = postt.map((p) =>
+      p._id === _id ? updatedPost : p
+    );
 
-      const updatedPosts = postt.map((p) =>
-        p._id === _id
-          ? {
-              ...p,
-              likes: liked
-                ? p.likes.filter((id) => id !== authUser._id)
-                : [...p.likes, authUser._id],
-            }
-          : p
-      );
+    dispatch(setPosts(updatedPosts));
+    setliked(!liked);
+    setLikeCount(updatedPost.likes.length);
+    toast.success(res.data.message);
+  } catch (error) {
+    console.log(error);
+    toast.error(error.response?.data?.message);
+  }
+};
 
-      dispatch(setPosts(updatedPosts));
-      setliked(!liked);
-      setLikeCount(liked ? likeCount - 1 : likeCount + 1);
-      dispatch(setPosts(updatedPosts));
-    } catch (error) {
-      console.log(error);
-      toast.error(error.res?.data?.message);
-    }
-  };
 
   const handleSave = async (_id) => {
     try {

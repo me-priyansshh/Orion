@@ -156,6 +156,8 @@ export const likePostController = async (req, res) => {
 
         await post.updateOne({ $addToSet: { likes: loggedInUserId }});
 
+        post.save();
+
         //Implementation Of socket.io
 
         return res.status(200).send({
@@ -188,6 +190,7 @@ export const dislikePostController = async (req, res) => {
 
         await post.updateOne({ $pull: { likes: loggedInUserId }});
 
+        post.save();
         //Implementation Of socket.io
 
         return res.status(200).send({

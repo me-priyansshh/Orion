@@ -12,9 +12,26 @@ const OrionAI = () => {
   const [messages, setMessages] = useState([]);
   const [uploadName, setUploadName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isPDFUploaded, setIsPDFUploaded] = useState(false);
   const fileRef = useRef();
   const navigate = useNavigate();
   const chatEndRef = useRef(null);
+
+  const handleFile = async (e) => {
+    const f = e.target.files?.[0];
+    if (f) {
+      setUploadName(f.name);
+      toast.success("PDF uploaded successfully!");
+      const formData = new FormData();
+      formData.append("file", f);
+      await axios.post("/rag/pdf", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setIsPDFUploaded(true);
+    }
+  };
 
   const models = [
     "openai/gpt-oss-120b",
@@ -43,6 +60,33 @@ const OrionAI = () => {
     const thinkingMsg = { sender: "Orion", text: "Thinking...", temp: true };
     setMessages((prev) => [...prev, thinkingMsg]);
 
+    if (isPDFUploaded) {
+      try {
+        const res = await axios.post("/pdf/chat", { prompt });
+        setMessages((prev) =>
+          prev
+            .filter((m) => !m.temp)
+            .concat({
+              sender: "Orion",
+              text: res.data?.answer || "Not Found in PDF 🐞",
+            })
+        );
+      } catch (err) {
+        console.error(err);
+        toast.error("Server error. Please try again later.");
+        setMessages((prev) =>
+          prev
+            .filter((m) => !m.temp)
+            .concat({
+              sender: "Orion",
+              text: "Server error. Please try again later.",
+            })
+        );
+      }
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await axios.post("/ai", {
         prompt,
@@ -59,13 +103,13 @@ const OrionAI = () => {
       );
     } catch (err) {
       console.error(err);
-      toast.error("Error connecting to Orion API");
+      toast.error("Server error. Please try again later.");
       setMessages((prev) =>
         prev
           .filter((m) => !m.temp)
           .concat({
             sender: "Orion",
-            text: "Error: could not reach Orion API.",
+            text: "Server error. Please try again later.",
           })
       );
     } finally {
@@ -73,12 +117,15 @@ const OrionAI = () => {
     }
   };
 
-  const handleFile = (e) => {
-    const f = e.target.files?.[0];
-    if (f) {
-      setUploadName(f.name);
-      toast.success("PDF uploaded successfully!");
-      // if you want to send the PDF to backend, implement upload here
+  const handleRemovePDF = async () => {
+    try {
+      const res = await axios.delete("/rag/clear");
+      toast.success(res.data.message);
+      setIsPDFUploaded(false);
+      setUploadName("");
+    } catch (error) {
+      console.error("Error removing PDF:", error);
+      toast.error("Error removing PDF");
     }
   };
 
@@ -86,7 +133,8 @@ const OrionAI = () => {
     <div
       style={{
         minHeight: "92vh",
-        background: "radial-gradient(circle at top left, #0f0c29, #302b63, #24243e)",
+        background:
+          "radial-gradient(circle at top left, #0f0c29, #302b63, #24243e)",
         color: "#00eaff",
         fontFamily: "'Poppins', sans-serif",
         display: "flex",
@@ -116,9 +164,27 @@ const OrionAI = () => {
               margin: 0,
               display: "flex",
               gap: "8px",
+              alignItems: "center",
             }}
           >
             ORION <span style={{ color: "#ff00d4" }}>AI</span>
+            {isPDFUploaded && (
+              <span
+                style={{
+                  marginLeft: "10px",
+                  padding: "4px 10px",
+                  borderRadius: "6px",
+                  background: "rgba(0, 234, 255, 0.15)",
+                  border: "1px solid #00eaff55",
+                  color: "#00eaff",
+                  fontSize: "0.75rem",
+                  fontFamily: "'Poppins', sans-serif",
+                  textShadow: "0 0 4px #00eaff88",
+                }}
+              >
+                PDF MODE ON
+              </span>
+            )}
           </h1>
         </div>
 
@@ -410,8 +476,9 @@ const OrionAI = () => {
               color: "#ff00d4",
               cursor: "pointer",
             }}
+            onClick={() => handleRemovePDF()}
           >
-            <FaFilePdf /> Read PDF
+            <FaFilePdf /> REMOVE PDF
           </label>
 
           <label
