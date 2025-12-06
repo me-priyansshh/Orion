@@ -17,8 +17,8 @@ const pinecone = new PineconeClient({
 export const pineconeIndex = pinecone.index("orion");
 
 const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
-  pineconeIndex,
-  maxConcurrency: 5,
+    pineconeIndex,
+    maxConcurrency: 5,
 });
 
 export async function indexPDF(file) {
@@ -30,42 +30,44 @@ export async function indexPDF(file) {
   });
   const docs = await loader.load();
 
-  const textSplitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 1000,
-    chunkOverlap: 200,
-    separators: ["\n\n", "\n", " ", ""],
-  });
+    const textSplitter = new RecursiveCharacterTextSplitter({
+        chunkSize: 1000,
+        chunkOverlap: 200,
+        separators: ["\n\n", "\n", " ", ""],
+    })
 
-  const splitDocs = await textSplitter.splitText(docs[0].pageContent);
+    const splitDocs = await textSplitter.splitText(docs[0].pageContent)
 
-  const documents = splitDocs.map((text) => ({ pageContent: text }));
+    const documents = splitDocs.map((text) => ({ pageContent: text }));
 
-  const response = await vectorStore.addDocuments(documents);
+    const response = await vectorStore.addDocuments(documents);
 
-  return response;
+    return response;
 }
 
-// LLM setup
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+  // LLM setup
+     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function queryPDF(prompt) {
+
   const results = await vectorStore.similaritySearch(prompt, 5);
 
   if (!results || results.length === 0) return null;
 
-  if (results[0].score < 0.7) return null;
+  if (results[0].score < 0.70) return null;
 
   const context = results.map((r) => r.pageContent).join("\n\n");
 
-  const query = `Use the following context to answer the question.\n\nContext: ${context}\n\nQuestion: ${prompt}\n\nAnswer:`;
+   const query = `Use the following context to answer the question.\n\nContext: ${context}\n\nQuestion: ${prompt}\n\nAnswer:`;
 
-  const completion = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    temperature: 0,
-    messages: [
-      {
-        role: "system",
-        content: `You are a highly intelligent and creative assistant, but during PDF mode you must base your answers ONLY on the information found in the provided PDF context.
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      temperature: 0,
+      messages: [
+        {
+          role: "system",
+          content: `You are a highly intelligent and creative assistant, but during PDF mode you must base your answers ONLY on the information found in the provided PDF context.
 
 Rules:
 1. You may add clarity, creativity, structure, and better wording — BUT every factual statement must come from the PDF context.
@@ -74,17 +76,22 @@ Rules:
 3. Never invent facts that are not inside the context.
 4. You may reorganize, simplify, summarize, or creatively express the information from the context AS LONG AS it remains fully accurate.
 `,
-      },
-      { role: "user", content: query },
-    ],
-  });
+        },
+        { role: "user", content: query },
+      ],
+    });
 
-  const answer = completion.choices[0].message.content.trim();
+    const answer = completion.choices[0].message.content.trim();
 
-  if (answer === "Not found in PDF.") return null;
+    if (answer === "Not found in PDF.") return null;
 
-  return answer;
+    return answer;
+
 }
+
+
+
+
 
 /* 
   Every step to make a RAG system:
